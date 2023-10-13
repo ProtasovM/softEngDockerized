@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+
+  postgres:
+    image: postgres:15.1-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=forhighsmith
+      - POSTGRES_HOST_AUTH_METHOD=trust # no password
+      - POSTGRES_DB=forhighsmith
+      - PGDATA=/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: app
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    entrypoint: "/tmp/wait-for-it.sh postgres:5432 -- /tmp/run.sh"
+    environment:
+      - APP_NAME=ForHighSmith
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://localhost
+      - APP_TIMEZONE=UTC
+      - LOG_CHANNEL=stack
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=forhighsmith
+      - DB_USERNAME=forhighsmith
+      - DB_PASSWORD=forhighsmith
+      - JWT_SECRET=mcqSZCbLwzp9iiWApfDxT8Wgw85Athc1yF2R21zaUymqdHcMFpQFnESd04bwM2Ef
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d/
+    depends_on:
+      - postgres
+      - app

@@ -1,54 +1,33 @@
-# LEPP ((Linux) + (E)nginx  + PostgreSQL + PHP) Docker stack for local web development
+# Домашнее задание для Хайсмит (докеризация)
 
-A docker-compose stack for local web development, which includes:
-- Nginx 1.22.1
-- PostgreSQL 15.1
-- PHP 8.2.7
+Задача:
+Необходимо создать RESTful API для управления заявками от дилеров на выдачу кредитов в
+автомобильной корпорации.
 
-There is also a LEMP (Nginx + MariaDB + PHP) Docker stack available [on this repo](https://github.com/bolinocroustibat/docker-lemp).
+API должно предоставлять следующие функциональности:
+1. Создание, просмотр, редактирование и удаление заявок от дилеров на выдачу
+   кредитов.
+2. Каждая заявка должна содержать следующие атрибуты: дилер (название дилера),
+   контактное лицо (сотрудник дилера), сумма кредита, срок кредита, процентная ставка,
+   описание причины кредита, статус заявки (например, новая, в процессе, одобрена,
+   отклонена), дата создания и дата обновления.
+3. Сотрудники корпорации могут просматривать список всех заявок, с пагинацией.
+4. Каждая заявка должна быть связана с определенным банком.
+5. API должно использовать PostgreSQL для хранения информации о заявках, банках.
 
-...and a LAMP (Apache + MariaDB + PHP) Docker stack available [on this repo](https://github.com/bolinocroustibat/docker-lamp).
 
-## How to run
+Требования:
+1. Решение должно быть размещено на GitHub. Создайте открытый репозиторий для
+   вашего проекта и разместите в нем код вашего решения.
+2. Развертывание проекта должно производиться с помощью Docker контейнеров,
+   используя docker-compose.yml. Вам потребуется настроить следующие контейнеры:
+    1. nginx: Веб-сервер Nginx для обслуживания RESTful API.
+    2. php-fpm: PHP-FPM для выполнения PHP-скриптов.
+    3. postgresql: Контейнер с PostgreSQL для хранения данных о заявках и других сущностях.
 
-- Install Docker
-
-- Export env variable `WWW_DOCUMENT_ROOT` to point to your project root directory:
-```sh
-export WWW_DOCUMENT_ROOT="/var/www/html"
-```
-
-- Export env variable `POSTGRES_DB` for defining your default PostgreSQL database:
-```sh
-export POSTGRES_DB="postgres"
-```
-
-- Start Docker compose:
-```ssh
-docker compose up -d
-```
-
-- Access the website at document root on the URL `http://localhost:8080/` or `http://127.0.0.1:8080/` (both work).
-
-## How to migrate a local MySQL DB to PostgreSQL DB
-
-```sh
-pgloader mysql://root:root@localhost:8889/db-name postgresql://postgres:postgres@localhost:5432/db-namee
-```
-
-You can then migrate the schema to public:
-```sql
-DO
-$$
-DECLARE
-    row record;
-BEGIN
-    FOR row IN SELECT tablename FROM pg_tables WHERE schemaname = 'db_name' -- and other conditions, if needed
-    LOOP
-        EXECUTE 'ALTER TABLE "db_name".' || quote_ident(row.tablename) || ' SET SCHEMA public;';
-    END LOOP;
-END;
-$$;
-
-DROP SCHEMA "db_name";
-```
+3. В docker-compose.yml укажите все необходимые настройки и переменные окружения
+   для контейнеров, включая настройки подключения к базам данных PostgreSQL, а также
+   настройки Nginx.
+4. Предоставьте инструкции по развертыванию проекта с использованием Docker.
+   Включите команды для сборки и запуска контейнеров, а также настройки окружения,
+   которые могут потребоваться для корректной работы приложения.
