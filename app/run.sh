@@ -1,12 +1,12 @@
 #!/bin/sh
 
-cd /var/www/forHighSmith
+cd /var/www/app
 if [ -e /tmp/booted ]; then
    php-fpm
 else
     php artisan migrate --seed \
-      && php artisan db:seed -vv --class "Database\Seeders\BankTableSeeder" \
-      && php artisan db:seed -vv --class "Database\Seeders\ApplicationTableSeeder" \
+      && php artisan passport:client --password --name test --provider users \
+      && php artisan passport:install \
       && touch /tmp/booted \
       && php-fpm
 fi
